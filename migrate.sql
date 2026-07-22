@@ -1,9 +1,9 @@
 -- Create patients table
 CREATE TABLE IF NOT EXISTS patients (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name VARCHAR NOT NULL,
-  phone_number VARCHAR,
-  is_walk_in BOOLEAN DEFAULT false
+  first_name VARCHAR NOT NULL,
+  last_name VARCHAR NOT NULL,
+  phone_number VARCHAR UNIQUE
 );
 
 -- Create doctors table
@@ -13,12 +13,14 @@ CREATE TABLE IF NOT EXISTS doctors (
   department VARCHAR NOT NULL
 );
 
--- Create appointments table with UNIQUE constraint on doctor_id and appointment_time
+-- Create appointments table with FOREIGN KEY constraints
 CREATE TABLE IF NOT EXISTS appointments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  patient_id UUID NOT NULL REFERENCES patients(id),
-  doctor_id UUID NOT NULL REFERENCES doctors(id),
+  patient_id UUID NOT NULL,
+  doctor_id UUID NOT NULL,
   appointment_time TIMESTAMP NOT NULL,
-  status VARCHAR DEFAULT 'scheduled',
+  status VARCHAR DEFAULT 'booked',
+  CONSTRAINT fk_patient FOREIGN KEY (patient_id) REFERENCES patients(id),
+  CONSTRAINT fk_doctor FOREIGN KEY (doctor_id) REFERENCES doctors(id),
   CONSTRAINT unique_doctor_time UNIQUE (doctor_id, appointment_time)
 );
